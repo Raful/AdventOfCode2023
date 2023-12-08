@@ -9,4 +9,8 @@ public static class Common
     {
         return inputLine.Split(' ').Where(i => int.TryParse(i, out int _)).Select(i => int.Parse(i)).ToArray();
     }
+    public static ulong[] GetNumbersInLineUlong(string inputLine)
+    {
+        return inputLine.Split(' ').Where(i => ulong.TryParse(i, out ulong _)).Select(i => ulong.Parse(i)).ToArray();
+    }
 }
