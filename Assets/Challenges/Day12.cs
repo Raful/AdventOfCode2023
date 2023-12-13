@@ -18,7 +18,7 @@ public class Day12 : MonoBehaviour
     private async void Awake()
     {
         //Debug.Log("Day 12 part 1: " + await ExecutePart1(_input));
-        Debug.Log("Day 12 part 2: " + ExecutePart2(_input));
+        Debug.Log("Day 12 part 2: " + await ExecutePart2(_input));
     }
 
     public static async Task<long> ExecutePart1(string input)
