@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -72,105 +73,165 @@ public class Day12Tests
         Assert.IsFalse(Day12.IsValidSequence(inputSequence, inputVerification));
     }
 
-    [Test]
-    public void ExampleLine1()
+    [UnityTest]
+    public IEnumerator ExampleLine1()
     {
         string input = "#.#.### 1,1,3";
 
         long expected = 1;
-        long actual = Day12.ExecutePart1(input).Result;
+
+        Task<long> executeTask = Day12.ExecutePart1(input);
+        while (!executeTask.IsCompleted)
+        {
+            yield return null;
+        }
+        long actual = executeTask.Result;
 
         Assert.AreEqual(expected, actual);
     }
-    [Test]
-    public void ExampleLine2()
+    [UnityTest]
+    public IEnumerator ExampleLine2()
     {
         string input = ".#...#....###. 1,1,3";
 
         long expected = 1;
-        long actual = Day12.ExecutePart1(input).Result;
+
+        Task<long> executeTask = Day12.ExecutePart1(input);
+        while (!executeTask.IsCompleted)
+        {
+            yield return null;
+        }
+        long actual = executeTask.Result;
 
         Assert.AreEqual(expected, actual);
     }
-    [Test]
-    public void ExampleLine3()
+    [UnityTest]
+    public IEnumerator ExampleLine3()
     {
         string input = "?#?#?#?#?#?#?#? 1,3,1,6";
 
         long expected = 1;
-        long actual = Day12.ExecutePart1(input).Result;
+
+        Task<long> executeTask = Day12.ExecutePart1(input);
+        while (!executeTask.IsCompleted)
+        {
+            yield return null;
+        }
+        long actual = executeTask.Result;
 
         Assert.AreEqual(expected, actual);
     }
-    [Test]
-    public void ExampleLine4()
+    [UnityTest]
+    public IEnumerator ExampleLine4()
     {
         string input = "????.#...#... 4,1,1";
 
         long expected = 1;
-        long actual = Day12.ExecutePart1(input).Result;
+
+        Task<long> executeTask = Day12.ExecutePart1(input);
+        while (!executeTask.IsCompleted)
+        {
+            yield return null;
+        }
+        long actual = executeTask.Result;
 
         Assert.AreEqual(expected, actual);
     }
-    [Test]
-    public void ExampleLine5()
+    [UnityTest]
+    public IEnumerator ExampleLine5()
     {
         string input = "????.######..#####. 1,6,5";
 
         long expected = 4;
-        long actual = Day12.ExecutePart1(input).Result;
+
+        Task<long> executeTask = Day12.ExecutePart1(input);
+        while (!executeTask.IsCompleted)
+        {
+            yield return null;
+        }
+        long actual = executeTask.Result;
 
         Assert.AreEqual(expected, actual);
     }
-    [Test]
-    public void ExampleLine6()
+    [UnityTest]
+    public IEnumerator ExampleLine6()
     {
         string input = "?###???????? 3,2,1";
 
         long expected = 10;
-        long actual = Day12.ExecutePart1(input).Result;
+
+        Task<long> executeTask = Day12.ExecutePart1(input);
+        while (!executeTask.IsCompleted)
+        {
+            yield return null;
+        }
+        long actual = executeTask.Result;
 
         Assert.AreEqual(expected, actual);
     }
 
-    [Test]
-    public void RealLine10_1_3()
+    [UnityTest]
+    public IEnumerator RealLine10_1_3()
     {
         string input = "#?#?#?#?#???????# 10,1,3";
 
         long expected = 2;
-        long actual = Day12.ExecutePart1(input).Result;
+
+        Task<long> executeTask = Day12.ExecutePart1(input);
+        while (!executeTask.IsCompleted)
+        {
+            yield return null;
+        }
+        long actual = executeTask.Result;
 
         Assert.AreEqual(expected, actual);
     }
-    [Test]
-    public void RealLineReduced()
+    [UnityTest]
+    public IEnumerator RealLineReduced()
     {
         string input = "????????? 9";
 
         long expected = 1;
-        long actual = Day12.ExecutePart1(input).Result;
+
+        Task<long> executeTask = Day12.ExecutePart1(input);
+        while (!executeTask.IsCompleted)
+        {
+            yield return null;
+        }
+        long actual = executeTask.Result;
 
         Assert.AreEqual(expected, actual);
     }
-    [Test]
-    public void RealLineReduced2()
+    [UnityTest]
+    public IEnumerator RealLineReduced2()
     {
         string input = "??????? 7";
 
         long expected = 1;
-        long actual = Day12.ExecutePart1(input).Result;
+
+        Task<long> executeTask = Day12.ExecutePart1(input);
+        while (!executeTask.IsCompleted)
+        {
+            yield return null;
+        }
+        long actual = executeTask.Result;
 
         Assert.AreEqual(expected, actual);
     }
 
-    [Test]
-    public void ProvidedExample()
+    [UnityTest]
+    public IEnumerator ProvidedExample()
     {
         string input = "???.### 1,1,3\r\n.??..??...?##. 1,1,3\r\n?#?#?#?#?#?#?#? 1,3,1,6\r\n????.#...#... 4,1,1\r\n????.######..#####. 1,6,5\r\n?###???????? 3,2,1";
 
         long expected = 21;
-        long actual = Day12.ExecutePart1(input).Result;
+
+        Task<long> executeTask = Day12.ExecutePart1(input);
+        while (!executeTask.IsCompleted)
+        {
+            yield return null;
+        }
+        long actual = executeTask.Result;
 
         Assert.AreEqual(expected, actual);
     }

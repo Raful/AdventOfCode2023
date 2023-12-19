@@ -19,7 +19,7 @@ public class Day14 : MonoBehaviour
     private async void Awake()
     {
         Debug.Log("Day 13 part 1: " + await Execute(_input, false, 1));
-        //Debug.Log("Day 13 part 2: " + await Execute(_input, true, 1_000_000));
+        Debug.Log("Day 13 part 2: " + await Execute(_input, true, 1_000_000_000));
     }
 
     public static async Task<long> Execute(string input, bool allDirections, int cycleCount)
@@ -41,6 +41,11 @@ public class Day14 : MonoBehaviour
         }
         Debug.Log($"{cycleCount} cycles completed");
 
+        return CalculateLoad(lines);
+    }
+
+    public static long CalculateLoad(StringBuilder[] lines)
+    {
         long load = 0;
 
         for (int i = 0; i < lines.Length; i++)
@@ -50,7 +55,7 @@ public class Day14 : MonoBehaviour
                 if (lines[i][x] == ROLLING_STONE_SYMBOL)
                     load += lines.Length - i;
             }
-         }
+        }
 
         return load;
     }
@@ -104,11 +109,27 @@ public class Day14 : MonoBehaviour
             {
                 for (int x = lines[y].Length - 2; x >= 0; x--)
                 {
-                    if (lines[y][x] == ROLLING_STONE_SYMBOL && lines[y][x + 1] != ROLLING_STONE_SYMBOL && lines[y][x + 1] != STATIC_STONE_SYMBOL)
+                    if (lines[y][x] == ROLLING_STONE_SYMBOL)
                     {
-                        lines[y][x + 1] = ROLLING_STONE_SYMBOL;
-                        lines[y][x] = NO_STONE_SYMBOL;
-                        stonesMoved = true;
+                        int nextFreeColumn = x;
+                        for (int i = 1; x + i < lines[y].Length; i++)
+                        {
+                            if (lines[y][x + i] == ROLLING_STONE_SYMBOL || lines[y][x + i] == STATIC_STONE_SYMBOL)
+                            {
+                                nextFreeColumn = x + i - 1;
+                                break;
+                            }
+                            else if (x + i == lines[y].Length - 1)
+                            {
+                                nextFreeColumn = lines[y].Length - 1;
+                            }
+                        }
+
+                        if (nextFreeColumn != x)
+                        {
+                            lines[y][nextFreeColumn] = ROLLING_STONE_SYMBOL;
+                            lines[y][x] = NO_STONE_SYMBOL;
+                        }
                     }
                 }
             }

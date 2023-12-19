@@ -276,7 +276,7 @@ public class Day14Tests
     {
         long expected = 69;
 
-        string input = ".....#....\r\n....#...O#\r\n.....##...\r\n..O#......\r\n.....OOO#.\r\n.O#...O#.#\r\n....O#...O\r\n.......OOO\r\n#...O###.O\r\n#.OOO#...O";
+        string input = "O....#....\r\nO.OO#....#\r\n.....##...\r\nOO.#O....O\r\n.O.....O#.\r\nO.#..O.#.#\r\n..O..#O..O\r\n.......O..\r\n#....###..\r\n#OO..#....";
 
         Task<long> executeTask = Day14.Execute(input, allDirections: true, 3); 
 
