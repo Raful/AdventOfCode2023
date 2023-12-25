@@ -5,6 +5,7 @@ using UnityEngine;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using static PlasticGui.Help.GuiHelp;
 
 public class Day22 : MonoBehaviour
 {
@@ -26,7 +27,7 @@ public class Day22 : MonoBehaviour
 
         string[] inputLines = Common.SplitLines(input);
 
-        if (!File.Exists(StableCubesPath))
+        if (!File.Exists(StableCubesPath)) //SpawnCubes() is really slow. The result gets cached to a file to speed up development. Delete the file if you change the input.
             SpawnCubes(inputLines);
         else
             SpawnStableCubesFromFile();
@@ -76,6 +77,7 @@ public class Day22 : MonoBehaviour
             GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
             cube.transform.position = middle;
             cube.transform.localScale = end - start + Vector3.one;
+            cube.name = $"Cube {spawnedCubes.Count}";
 
             Rigidbody rigidbody = cube.AddComponent<Rigidbody>();
             rigidbody.constraints = RigidbodyConstraints.FreezeAll;
@@ -94,6 +96,12 @@ public class Day22 : MonoBehaviour
         List<Transform> movableCubes = new List<Transform>(cubes);
         List<Transform> unmovableCubes = new List<Transform>(capacity: cubes.Count);
 
+        Debug.Log("Day 22 part 1: " + ExecutePart1(cubes, ref movableCubes, ref unmovableCubes));
+        Debug.Log("Day 22 part 2: " + ExecutePart2(cubes, ref movableCubes, ref unmovableCubes));
+    }
+
+    static long ExecutePart1(List<Transform> cubes, ref List<Transform> movableCubes, ref List<Transform> unmovableCubes)
+    {
         RaycastHit[] raycastHitsBuffer = new RaycastHit[1];
         List<Transform> detectedCubesBuffer = new(capacity: 20);
 
@@ -129,66 +137,86 @@ public class Day22 : MonoBehaviour
                 unmovableCubes.Add(detectedCubesBuffer[0]);
                 movableCubes.Remove(detectedCubesBuffer[0]);
 
-                Day22Cube day22Cube = detectedCubesBuffer[0].GetComponent<Day22Cube>();
-                day22Cube.supportedCubes.Add(cube.GetComponent<Day22Cube>());
+                Day22Cube standingOn = detectedCubesBuffer[0].GetComponent<Day22Cube>();
+                standingOn.supportedSoloCubes.Add(cube.GetComponent<Day22Cube>());
 
                 detectedCubesBuffer[0].GetComponent<Renderer>().material.color = Color.yellow;
+            }
+
+            foreach (Transform standingOn in detectedCubesBuffer)
+            {
+                standingOn.GetComponent<Day22Cube>().allSupportedCubes.Add(cube.GetComponent<Day22Cube>());
+                cube.GetComponent<Day22Cube>().restingOnCubes.Add(standingOn.GetComponent<Day22Cube>());
             }
 
             detectedCubesBuffer.Clear();
         }
 
-        foreach(Transform movableCube in movableCubes)
+        foreach (Transform movableCube in movableCubes)
         {
             movableCube.GetComponent<Renderer>().material.color = Color.green;
         }
 
-        int highestSupportedCubeCount = 0;
-        Transform highestSupportedCube = null;
+        return movableCubes.Count;
+    }
+
+    static long ExecutePart2(List<Transform> cubes, ref List<Transform> movableCubes, ref List<Transform> unmovableCubes)
+    {
+        List<long> sequenceCubeCounts = new();
 
         List<Transform> searchedCubes = new List<Transform>(capacity: cubes.Count);
-        foreach(Transform unmovableCube in unmovableCubes)
+
+        unmovableCubes.Sort((c1, c2) => (int)(c1.position.y - c2.position.y));
+
+        foreach (Transform startCube in cubes)
         {
-            if (searchedCubes.Contains(unmovableCube))
-                continue;
+            //if (searchedCubes.Contains(startCube))
+            //    continue;
 
             Stack<Day22Cube> day22Cubes = new();
-            day22Cubes.Push(unmovableCube.GetComponent<Day22Cube>());
+            List<Transform> cubesInSequence = new();
+            day22Cubes.Push(startCube.GetComponent<Day22Cube>());
 
             int supportedCubeCount = 0;
             while (day22Cubes.TryPop(out Day22Cube cube))
             {
                 searchedCubes.Add(cube.transform);
+                cubesInSequence.Add(cube.transform);
                 supportedCubeCount++;
 
-                foreach (Day22Cube supportedCube in cube.supportedCubes)
+                foreach (Day22Cube supportedCube in cube.supportedSoloCubes)
+                {
+                    day22Cubes.Push(supportedCube);
+
+                    //if (supportedCube.GetComponent<Renderer>().material.color == Color.grey)
+                    //{
+                    //    Debug.LogError($"Coloring grey cube cyan! {supportedCube.name}");
+                    //}
+                    //supportedCube.GetComponent<Renderer>().material.color = Color.cyan;
+                }
+
+                foreach (Day22Cube supportedCube in cube.allSupportedCubes.Where(c => !day22Cubes.Contains(c) && c.restingOnCubes.All(c2 => cubesInSequence.Contains(c2.transform))))
                 {
                     day22Cubes.Push(supportedCube);
                 }
             }
 
-            if (supportedCubeCount > highestSupportedCubeCount)
+
+            if (startCube.GetComponent<Renderer>().material.color == Color.cyan)
             {
-                highestSupportedCubeCount = supportedCubeCount;
-                highestSupportedCube = unmovableCube;
+                Debug.LogError($"Coloring cyan cube grey! {startCube.name}");
             }
+            startCube.GetComponent<Renderer>().material.color = Color.grey;
+            sequenceCubeCounts.Add(supportedCubeCount);
         }
 
-        Stack<Day22Cube> day22CubesToColor = new();
-        day22CubesToColor.Push(highestSupportedCube.GetComponent<Day22Cube>());
-
-        while (day22CubesToColor.TryPop(out Day22Cube cube))
+        long sum = 0;
+        foreach (long cubeCount in sequenceCubeCounts)
         {
-            cube.GetComponent<Renderer>().material.color = Color.cyan;
-
-            foreach (Day22Cube supportedCube in cube.supportedCubes)
-            {
-                day22CubesToColor.Push(supportedCube);
-            }
+            sum += cubeCount - 1;//(long)(cubeCount * (cubeCount - 1) / 2f);
         }
 
-        Debug.Log("Day 22 part 1: " + movableCubes.Count);
-        Debug.Log("Day 22 part 2: " + highestSupportedCubeCount); //TODO: Some cubes may be supported by multiple cubes that all get removed. 230 too low.
+        return sum;
     }
 
     static Vector3 ParseVector(string vectorString)

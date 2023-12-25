@@ -8,7 +8,9 @@ public class Day22Cube : MonoBehaviour
 {
     public event Action<Day22Cube> OnCubeStabilized;
 
-    public List<Day22Cube> supportedCubes = new List<Day22Cube>();
+    public List<Day22Cube> supportedSoloCubes = new List<Day22Cube>();
+    public List<Day22Cube> allSupportedCubes = new List<Day22Cube>();
+    public List<Day22Cube> restingOnCubes = new List<Day22Cube>();
 
     public void FallAsync()
     {
